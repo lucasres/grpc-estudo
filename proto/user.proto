@@ -1,0 +1,13 @@
+syntax = "proto3";
+package pb; 
+option go_package = "./pb"; // gera os pacotes internos do go
+// padroniza as mensagens 
+message User { 
+    string id = 1;
+    string name = 2;
+    string email = 3;
+}
+// define os serviços, com um metodo de AddUser que recebe um user e retorna um user
+service UserService {
+    rpc AddUser (User) returns (User);
+}
