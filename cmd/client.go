@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/lucasres/grpc-estudo/pb/pb"
 	"google.golang.org/grpc"
@@ -25,10 +27,18 @@ func GrpcClient() {
 }
 
 func callAddUser(c pb.UserServiceClient) {
+	r := bufio.NewReader(os.Stdin)
+	fmt.Println("Id:")
+	id, _ := r.ReadString('\n')
+	fmt.Println("Name:")
+	name, _ := r.ReadString('\n')
+	fmt.Println("Email:")
+	email, _ := r.ReadString('\n')
+
 	u := &pb.User{
-		Id:    "123456",
-		Name:  "Everson Zoio",
-		Email: "azideia@email.com",
+		Id:    id,
+		Name:  name,
+		Email: email,
 	}
 
 	res, err := c.AddUser(context.Background(), u)
@@ -37,5 +47,5 @@ func callAddUser(c pb.UserServiceClient) {
 		log.Fatalf("Cannot make request: %v", err)
 	}
 
-	fmt.Printf("Response: Id: %s, Name: %s, Email: %s", res.GetId(), res.GetName(), res.GetEmail())
+	fmt.Printf("Response:\n Id: %s\n Name: %s\n Email: %s", res.GetId(), res.GetName(), res.GetEmail())
 }

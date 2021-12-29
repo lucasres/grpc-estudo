@@ -24,6 +24,7 @@ func main() {
 		fmt.Println("Start server at :5000")
 		cmd.GrpcServer()
 	} else if choose == "2\n" {
+		fmt.Println("Start client request: AddUser")
 		cmd.GrpcClient()
 	} else {
 		log.Fatalf("Invalid choose")
