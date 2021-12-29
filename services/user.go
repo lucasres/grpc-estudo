@@ -24,7 +24,7 @@ func (*UserService) AddUser(ctx context.Context, u *pb.User) (*pb.User, error) {
 }
 
 func (*UserService) AddUserVerbose(u *pb.User, stream pb.UserService_AddUserVerboseServer) error {
-
+	fmt.Println("Recived request verbose")
 	stream.Send(&pb.UserResultStream{
 		Status: "init",
 		User:   &pb.User{},
