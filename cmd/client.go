@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/lucasres/grpc-estudo/pb/pb"
 	"google.golang.org/grpc"
@@ -36,7 +37,7 @@ func callAddUser(c pb.UserServiceClient) {
 	email, _ := r.ReadString('\n')
 
 	u := &pb.User{
-		Id:    id,
+		Id:    strings.Replace(id, "\n", ""),
 		Name:  name,
 		Email: email,
 	}
