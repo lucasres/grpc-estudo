@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/lucasres/grpc-estudo/pb/pb"
 	"google.golang.org/grpc"
@@ -25,14 +26,16 @@ func GrpcClient() {
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("1 - Unary\n 2 - Stream")
+	fmt.Println("1 - Unary\n 2 - Response stream\n 3 - Sent with stream")
 
 	choose, _ := reader.ReadString('\n')
 
 	if choose == "1\n" {
 		callAddUser(client)
-	} else {
+	} else if choose == "2\n" {
 		callAddUserVerbose(client)
+	} else {
+		callSendStreamUser(client)
 	}
 
 }
@@ -95,4 +98,44 @@ func callAddUserVerbose(c pb.UserServiceClient) {
 
 		fmt.Println(stream.GetStatus())
 	}
+}
+
+func callSendStreamUser(c pb.UserServiceClient) {
+	users := []*pb.User{
+		&pb.User{
+			Id:    "123",
+			Name:  "Lucas",
+			Email: "lucas@email.com",
+		},
+		&pb.User{
+			Id:    "456",
+			Name:  "Everson Zoio",
+			Email: "777fazsol@email.com",
+		},
+		&pb.User{
+			Id:    "789",
+			Name:  "Matue",
+			Email: "voufazerumamaquinadotempo@email.com",
+		},
+	}
+
+	stream, err := c.AddUsers(context.Background())
+
+	if err != nil {
+		log.Fatalf("erro in send stream client %v", err)
+	}
+
+	for _, val := range users {
+		stream.Send(val)
+		time.Sleep(2 * time.Second)
+	}
+
+	res, err := stream.CloseAndRecv()
+
+	if err != nil {
+		log.Fatalf("error when close stream %v", err)
+	}
+
+	fmt.Println("response:")
+	fmt.Print(res)
 }

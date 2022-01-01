@@ -3,6 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
+	"io"
+	"log"
 	"time"
 
 	"github.com/lucasres/grpc-estudo/pb/pb"
@@ -49,6 +51,34 @@ func (*UserService) AddUserVerbose(u *pb.User, stream pb.UserService_AddUserVerb
 	})
 
 	return nil
+}
+
+func (*UserService) AddUsers(stream pb.UserService_AddUsersServer) error {
+	users := []*pb.User{}
+
+	for {
+		req, err := stream.Recv()
+
+		if err == io.EOF {
+			return stream.SendAndClose(&pb.Users{
+				User: users,
+			})
+		}
+
+		if err != nil {
+			log.Fatalf("Error when recive stream msg %v", err)
+		}
+
+		fmt.Printf("Adding new user: %s\n", req.GetId())
+
+		users = append(users, &pb.User{
+			Id:    req.GetId(),
+			Name:  req.GetName(),
+			Email: req.GetEmail(),
+		})
+
+	}
+
 }
 
 func NewUserService() *UserService {
